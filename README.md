@@ -20,10 +20,23 @@ There are five of these, one per target language:
 `primegraph-core-ts`, `primegraph-core-go`, `primegraph-core-swift`, `primegraph-core-py`,
 `primegraph-core-kt`.
 
-## Status
+## What is here
 
-Scaffolding only. No shared declarations have been migrated yet; `src/primegraph_core/__init__.py`
-holds a single placeholder so the distribution has something to build.
+Only the declarations that must be one object per process. Everything else the compiler emits — the
+expression helpers, `validate_schema`, `fetch`, `parse_response`, the HTTP and Firebase transport —
+stays inside the generated packages.
+
+| Name | Why it is shared |
+| --- | --- |
+| `File` | pydantic validates a `BaseModel`-typed field by `isinstance` and offers no `from_attributes` fallback, so a second copy of the class makes a model in one package reject a file built by another with a `ValidationError`. |
+| `DslError` | Every boundary recognises a DSL error by `isinstance(e, DslError)`. Two copies make that test `False`, so a raised error silently degrades to `INTERNAL_ERROR` and drops its typed payload. |
+| `DslErrorView` | The `{code, payload}` carrier a catch binding holds and an HTTP handler annotates. |
+| `coerce_error`, `error_matches`, `error_view` | The three entry points that reach `isinstance(e, DslError)`. |
+| `default_error_message`, `DSL_ERROR_MESSAGES` | The text a coerced error is given when its payload leaves the slot empty. |
+| `transport_error_code`, `TRANSPORT_ERROR_CODES` | The SDK status → DSL code mapping the coercion consults. Both SDK imports are guarded, so this adds no dependency on `firebase-admin` or `google-api-core`. |
+
+`validate_schema`, `fetch` and `parse_response` *raise* `DslError` but nothing tests their identity, so
+they stay per-package and import `DslError` from here.
 
 ## The importable module is `primegraph_core`, not `runtime`
 
@@ -33,6 +46,17 @@ The top-level module must never be called `runtime` or anything else generic. Ev
 of a graph is installed into one environment; a generic top-level name collides between two
 distributions there, and the loser is decided by `sys.path` order rather than by anything the compiler
 controls.
+
+Emitted code qualifies every shared reference — `runtime.File`, `runtime.DslErrorView[...]`,
+`runtime.error_matches(...)`. To keep that qualifier without claiming the top-level name, the
+distribution ships `primegraph_core/runtime.py`, so a generated module writes:
+
+```python
+from primegraph_core import runtime
+```
+
+`runtime` is then a locally bound name for `primegraph_core.runtime`, not a top-level package, and
+every existing `runtime.<name>` reference site is unchanged.
 
 ## Typing
 
@@ -45,7 +69,11 @@ otherwise, and a wheel without the marker makes consumers see the whole package 
 ```
 pyproject.toml                    poetry manifest, python >=3.11
 src/primegraph_core/__init__.py   public surface
+src/primegraph_core/errors.py     DslError, DslErrorView and the coercion cluster
+src/primegraph_core/files.py      File
+src/primegraph_core/runtime.py    the same surface under the `runtime` qualifier
 src/primegraph_core/py.typed      PEP 561 marker
+tests/                            pytest suite
 .githooks/                        Conventional Commits hook, dependency-free POSIX shell
 scripts/setup.sh                  one-time clone setup
 scripts/release.sh                the release procedure
@@ -65,12 +93,17 @@ The hook rejects any commit message that is not a Conventional Commit: `type(sco
 `build chore ci docs feat fix perf refactor revert style test`, header at most 100 characters, no
 trailing period.
 
-## Build
+## Build and check
 
 ```sh
+poetry install
 poetry check
 poetry build
+poetry run pytest
+poetry run mypy
 ```
+
+`mypy` runs `--strict` over `src` and `tests`; the settings live in `pyproject.toml`.
 
 ## Releasing
 

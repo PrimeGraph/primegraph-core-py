@@ -16,8 +16,23 @@ include = [{ path = "src/primegraph_core/py.typed", format = ["sdist", "wheel"] 
 
 [tool.poetry.dependencies]
 # Lower bounds only — never cap the interpreter or a dependency from above.
+# The bounds are the ones every generated Python bundle already declares, so a
+# consumer installing this distribution next to one of them never resolves two
+# pydantic majors.
 python = ">=3.11"
+pydantic = ">=2"
 typing-extensions = ">=4.7"
+
+[tool.poetry.group.dev.dependencies]
+mypy = ">=1.11"
+pytest = ">=8"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+files = ["src", "tests"]
+strict = true
 
 [build-system]
 requires = ["poetry-core"]
