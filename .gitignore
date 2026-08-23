@@ -1,0 +1,30 @@
+# Build output
+dist/
+build/
+*.egg-info/
+
+# Bytecode and caches
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Poetry
+poetry.lock
+
+# Credentials and local environment
+.env
+.env.*
+*.pem
+*.key
+*.json.key
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "primegraph-core"
+version = "0.0.0"
+description = "Shared cross-package vocabulary for PrimeGraph generated Python packages"
+authors = ["PrimeGraph Generator <generator@primegraph.ai>"]
+readme = "README.md"
+
+# The importable module is primegraph_core, never `runtime`. A generic
+# top-level name collides the moment two distributions are installed into one
+# environment, and every generated package shares that environment.
+packages = [{ include = "primegraph_core", from = "src" }]
+
+# PEP 561: poetry ships only *.py unless the marker is listed here, and without
+# it consumers see the package as untyped.
+include = [{ path = "src/primegraph_core/py.typed", format = ["sdist", "wheel"] }]
+
+[tool.poetry.dependencies]
+# Lower bounds only — never cap the interpreter or a dependency from above.
+python = ">=3.11"
+typing-extensions = ">=4.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
