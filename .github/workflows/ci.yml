@@ -79,11 +79,17 @@ jobs:
           # a library, so it resolves its lower bounds fresh — and the lock file
           # is the only thing setup-python's poetry cache can key on.
 
-      # Installed after setup-python so poetry and the environment it builds
-      # are both the pinned 3.11. The poetry version is pinned so a release of
-      # the tool cannot change what this check means from one day to the next.
+      # The poetry version is pinned so a release of the tool cannot change
+      # what this check means from one day to the next.
       - name: Install Poetry
         run: pipx install poetry==1.8.5
+
+      # pipx installs poetry against its own interpreter, and poetry would then
+      # build the project environment with that one — the pinned version above
+      # would never be exercised. This points it at the interpreter setup-python
+      # put on PATH.
+      - name: Point Poetry at the pinned interpreter
+        run: poetry env use "$(command -v python)"
 
       # The commands the README documents. `poetry build` is deliberately left
       # out: producing a distributable artifact belongs to the release, not to
