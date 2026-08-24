@@ -22,9 +22,10 @@ There are five of these, one per target language:
 
 ## What is here
 
-Only the declarations that must be one object per process. Everything else the compiler emits — the
-expression helpers, `validate_schema`, `fetch`, `parse_response`, the HTTP and Firebase transport —
-stays inside the generated packages.
+Only the declarations that must be one object per process, plus the ones that are pure declaration
+and were repeated verbatim everywhere. Everything else the compiler emits — the expression helpers,
+`validate_schema`, `fetch`, `parse_response`, the HTTP and Firebase transport — stays inside the
+generated packages.
 
 | Name | Why it is shared |
 | --- | --- |
@@ -33,6 +34,7 @@ stays inside the generated packages.
 | `DslErrorView` | The `{code, payload}` carrier a catch binding holds and an HTTP handler annotates. |
 | `coerce_error`, `error_matches`, `error_view` | The three entry points that reach `isinstance(e, DslError)`. |
 | `default_error_message`, `DSL_ERROR_MESSAGES` | The text a coerced error is given when its payload leaves the slot empty. |
+| `HttpResponse` | Not by identity: it is pure declaration. Every generated package that emits an HTTP step repeated the same three members and none of them ever differed. The `fetch` that fills it stays generated. |
 | `transport_error_code`, `TRANSPORT_ERROR_CODES` | The SDK status → DSL code mapping the coercion consults. Both SDK imports are guarded, so this adds no dependency on `firebase-admin` or `google-api-core`. |
 
 `validate_schema`, `fetch` and `parse_response` *raise* `DslError` but nothing tests their identity, so
@@ -71,6 +73,7 @@ pyproject.toml                    poetry manifest, python >=3.11
 src/primegraph_core/__init__.py   public surface
 src/primegraph_core/errors.py     DslError, DslErrorView and the coercion cluster
 src/primegraph_core/files.py      File
+src/primegraph_core/http.py       HttpResponse
 src/primegraph_core/runtime.py    the same surface under the `runtime` qualifier
 src/primegraph_core/py.typed      PEP 561 marker
 tests/                            pytest suite

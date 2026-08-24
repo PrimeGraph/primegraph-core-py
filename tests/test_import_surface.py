@@ -17,6 +17,7 @@ EXPECTED = [
     "DslError",
     "DslErrorView",
     "File",
+    "HttpResponse",
     "coerce_error",
     "default_error_message",
     "error_matches",
@@ -45,9 +46,11 @@ def test_the_runtime_qualifier_exposes_the_very_same_objects() -> None:
 def test_the_submodules_expose_the_same_objects_as_the_package() -> None:
     errors = importlib.import_module("primegraph_core.errors")
     files = importlib.import_module("primegraph_core.files")
+    http = importlib.import_module("primegraph_core.http")
 
     assert errors.DslError is primegraph_core.DslError
     assert files.File is primegraph_core.File
+    assert http.HttpResponse is primegraph_core.HttpResponse
 
 
 def test_the_manifest_ships_one_package_and_it_is_not_generic() -> None:

@@ -17,6 +17,10 @@ What lives here is only what has to be one object per process:
   ``isinstance(e, DslError)`` — with two copies a raised DSL error degrades to
   ``INTERNAL_ERROR`` and drops its typed payload, silently.
 
+* :class:`~primegraph_core.http.HttpResponse` — not by identity, but because it
+  is pure declaration: every generated package repeated the same three members
+  and none of them ever differed.
+
 Everything else the compiler emits — the expression helpers, the HTTP and
 Firebase transport, ``validate_schema``, ``fetch``, ``parse_response`` — stays
 inside the generated packages. Those raise ``DslError`` but nothing tests their
@@ -35,6 +39,7 @@ from primegraph_core.errors import (
     transport_error_code,
 )
 from primegraph_core.files import File
+from primegraph_core.http import HttpResponse
 
 __all__ = [
     "DSL_ERROR_MESSAGES",
@@ -42,6 +47,7 @@ __all__ = [
     "DslError",
     "DslErrorView",
     "File",
+    "HttpResponse",
     "coerce_error",
     "default_error_message",
     "error_matches",
