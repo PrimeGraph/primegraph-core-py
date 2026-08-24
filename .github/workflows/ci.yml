@@ -70,18 +70,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5.1.0
 
-      # Poetry has to exist before setup-python, which keys its cache on the
-      # environment poetry reports. The version is pinned: poetry.lock is
-      # lock-version 2.0, which the 2.x line refuses to read without a relock.
-      - name: Install Poetry
-        run: pipx install poetry==1.8.5
-
       - uses: actions/setup-python@v6.3.0
         with:
           # pyproject declares python >=3.11, so 3.11 is the floor the
           # distribution promises to work on and the one worth testing.
           python-version: '3.11'
-          cache: poetry
+          # No dependency cache: poetry.lock is gitignored on purpose — this is
+          # a library, so it resolves its lower bounds fresh — and the lock file
+          # is the only thing setup-python's poetry cache can key on.
+
+      # Installed after setup-python so poetry and the environment it builds
+      # are both the pinned 3.11. The poetry version is pinned so a release of
+      # the tool cannot change what this check means from one day to the next.
+      - name: Install Poetry
+        run: pipx install poetry==1.8.5
 
       # The commands the README documents. `poetry build` is deliberately left
       # out: producing a distributable artifact belongs to the release, not to
