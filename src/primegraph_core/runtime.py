@@ -23,6 +23,8 @@ from primegraph_core import (
     error_matches,
     error_view,
     transport_error_code,
+    whole_int,
+    whole_int_text,
 )
 
 __all__ = [
@@ -37,4 +39,6 @@ __all__ = [
     "error_matches",
     "error_view",
     "transport_error_code",
+    "whole_int",
+    "whole_int_text",
 ]

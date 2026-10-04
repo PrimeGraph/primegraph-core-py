@@ -20,6 +20,9 @@ What lives here is only what has to be one object per process:
 * :class:`~primegraph_core.http.HttpResponse` — not by identity, but because it
   is pure declaration: every generated package repeated the same three members
   and none of them ever differed.
+* :func:`~primegraph_core.integers.whole_int` and
+  :func:`~primegraph_core.integers.whole_int_text` — the converters an emitted
+  integer slot names, shared so every slot names the same function object.
 
 Everything else the compiler emits — the expression helpers, the HTTP and
 Firebase transport, ``validate_schema``, ``fetch``, ``parse_response`` — stays
@@ -40,6 +43,7 @@ from primegraph_core.errors import (
 )
 from primegraph_core.files import File
 from primegraph_core.http import HttpResponse
+from primegraph_core.integers import whole_int, whole_int_text
 
 __all__ = [
     "DSL_ERROR_MESSAGES",
@@ -53,4 +57,6 @@ __all__ = [
     "error_matches",
     "error_view",
     "transport_error_code",
+    "whole_int",
+    "whole_int_text",
 ]

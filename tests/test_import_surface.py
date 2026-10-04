@@ -23,6 +23,8 @@ EXPECTED = [
     "error_matches",
     "error_view",
     "transport_error_code",
+    "whole_int",
+    "whole_int_text",
 ]
 
 
@@ -47,10 +49,13 @@ def test_the_submodules_expose_the_same_objects_as_the_package() -> None:
     errors = importlib.import_module("primegraph_core.errors")
     files = importlib.import_module("primegraph_core.files")
     http = importlib.import_module("primegraph_core.http")
+    integers = importlib.import_module("primegraph_core.integers")
 
     assert errors.DslError is primegraph_core.DslError
     assert files.File is primegraph_core.File
     assert http.HttpResponse is primegraph_core.HttpResponse
+    assert integers.whole_int is primegraph_core.whole_int
+    assert integers.whole_int_text is primegraph_core.whole_int_text
 
 
 def test_the_manifest_ships_one_package_and_it_is_not_generic() -> None:

@@ -35,6 +35,7 @@ generated packages.
 | `coerce_error`, `error_matches`, `error_view` | The three entry points that reach `isinstance(e, DslError)`. |
 | `default_error_message`, `DSL_ERROR_MESSAGES` | The text a coerced error is given when its payload leaves the slot empty. |
 | `HttpResponse` | Not by identity: it is pure declaration. Every generated package that emits an HTTP step repeated the same three members and none of them ever differed. The `fetch` that fills it stays generated. |
+| `whole_int`, `whole_int_text` | The converters an emitted integer slot names in `Annotated[StrictInt, BeforeValidator(runtime.whole_int)]` (JSON values) or `BeforeValidator(runtime.whole_int_text)` (parameter text). OpenAPI defines `integer` by value, so `1.0` and `1e2` are the integers 1 and 100 and `1.5` is none. One module-level function instead of a lambda per slot keeps an emitted validator one cacheable object. |
 | `transport_error_code`, `TRANSPORT_ERROR_CODES` | The SDK status → DSL code mapping the coercion consults. Both SDK imports are guarded, so this adds no dependency on `firebase-admin` or `google-api-core`. |
 
 `validate_schema`, `fetch` and `parse_response` *raise* `DslError` but nothing tests their identity, so
@@ -69,11 +70,12 @@ otherwise, and a wheel without the marker makes consumers see the whole package 
 ## Layout
 
 ```
-pyproject.toml                    poetry manifest, python >=3.11
+pyproject.toml                    poetry manifest, python >=3.14
 src/primegraph_core/__init__.py   public surface
 src/primegraph_core/errors.py     DslError, DslErrorView and the coercion cluster
 src/primegraph_core/files.py      File
 src/primegraph_core/http.py       HttpResponse
+src/primegraph_core/integers.py   whole_int, whole_int_text
 src/primegraph_core/runtime.py    the same surface under the `runtime` qualifier
 src/primegraph_core/py.typed      PEP 561 marker
 tests/                            pytest suite
