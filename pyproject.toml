@@ -20,9 +20,9 @@ include = [{ path = "src/primegraph_core/py.typed", format = ["sdist", "wheel"] 
 # The bounds are the ones every generated Python bundle already declares, so a
 # consumer installing this distribution next to one of them never resolves two
 # pydantic majors.
-python = ">=3.11"
-pydantic = ">=2"
-typing-extensions = ">=4.7"
+python = ">=3.14"
+pydantic = ">=2.13.5"
+typing-extensions = ">=4.16.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = ">=1.11"
